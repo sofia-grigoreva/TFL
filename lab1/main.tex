@@ -1,0 +1,349 @@
+\documentclass[a4paper,12pt]{article}
+
+% ==============================
+%            ПАКЕТЫ
+% ==============================
+\usepackage{cmap}
+\usepackage[T2A]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[english,russian]{babel}
+\usepackage{hyperref}
+\usepackage{multicol}
+\usepackage{mathtools}
+\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{tikz}
+\usepackage{cancel}
+\usetikzlibrary{automata, positioning, arrows.meta}
+\usepackage[linesnumbered,ruled,vlined]{algorithm2e}
+
+
+
+% ==============================
+%         СОКРАЩЕНИЯ
+% ==============================
+\newcommand{\T}{\mathcal{T}}
+\newcommand{\w}{\omega}
+\newcommand{\pair}[2]{\langle #1, #2 \rangle}
+
+% ==============================
+%         ТИТУЛЬНЫЙ ЛИСТ
+% ==============================
+\begin{document}
+
+\begin{titlepage}
+\centering
+
+{\LARGE \textbf{Теория формальных языков} \par}
+\vspace{0.5cm}
+
+{\large \textbf{Лабораторная работа №1} \par}
+{\large Вариант 8 \par}
+\vspace{1.5cm}
+
+{\large \textbf{Работу выполнила:} \par}
+{\large Студент группы ИУ9-51Б \par}
+{\large Григорьева Софья \par}
+
+\end{titlepage}
+
+
+% ==============================
+%         СОДЕРЖАНИЕ
+% ==============================
+
+\tableofcontents
+\newpage
+
+% ==============================
+%           ЗАДАНИЕ
+% ==============================
+
+\section{Задание}
+
+Дана SRS:
+\begin{flushleft}
+$apbc \rightarrow caqdbapbap$\\
+$paqd \rightarrow daqdbapbap$\\
+$ccpp \rightarrow adaqdqa$\\
+$dpd \rightarrow pdp$\\
+\end{flushleft}
+
+По имеющейся SRS определить:
+\begin{itemize}
+    \item[---] завершимость;
+    \item[---] конечность классов эквивалентности по НФ (для построения 
+    эквивалентностей считаем, что правила могут применяться в обе стороны). 
+    Если их конечное число, то построить минимальную систему переписывания, 
+    соответствующую им;
+    \item[---] локальную конфлюэнтность и пополняемость по Кнуту–Бендиксу.
+\end{itemize}
+
+По SRS $\mathcal{T}$ тем самым (исключая случай, когда она сразу локально 
+конфлюэнтна или конечна и минимальна) строится другая SRS $\T'$, которая 
+должна сохранять те же классы эквивалентности. Если исходная SRS завершима, 
+то правила в $\T'$ должны удовлетворять условию убывания левой части 
+относительно правой по выбранному фундированному порядку $\preceq$.
+
+Провести автоматическое тестирование предполагаемой эквивалентности указанных SRS.\\\\
+\textbf{Фазз-тестирование эквивалентности:} строится случайное слово $\w$ и 
+случайная цепочка переписываний его в $\w'$ по $\T$. Проверить, можно ли 
+получить $\w'$ из $\w$ (или наоборот) в рамках правил $\T'$.\\\\
+\textbf{Метаморфное тестирование:} выбрать инварианты, которые должны сохраняться
+(либо монотонно изменяться) при переписывании в рамках $\T$. Породить случайную 
+цепочку переписываний над случайным словом в $\T'$ и проверить выполнение 
+инвариантов. Как минимум два разных инварианта.
+% -------------------------------------------------------------------------------------
+
+\clearpage 
+\section{Исследование SRS}
+
+
+
+% ==============================
+%        ЗАВЕРШИМОСТЬ
+% ==============================
+\subsection{Завершимость}
+
+Исходная SRS $\mathcal{T}$ является завершаемой. \\
+
+\noindent\textbf{Доказательство:} \\
+
+Рассмотрим инвариант
+\[
+I(S) = \sum_{i=1}^{n} g(s_i) \, 2^{i-1}, \quad \text{где} \quad
+g(x) = 
+\begin{cases} 
+10, & \text{если } x = c,\\ 
+1, & \text{если } x = d,\\ 
+0, & \text{иначе} 
+\end{cases}
+\]
+
+Здесь $s_i$ — буква слова на $i$-й позиции (нумерация начинается с 1). \\
+
+Проверим инвариант для правил переписывания.  
+Пусть правило применяется к подстроке, первый символ которой находится на $m$-й позиции в строке ($1 \le m \le n$). \\
+
+\begin{enumerate}[label=\Roman*.]
+\item $apbc \rightarrow caqdbapbap$ \\\\
+    $I(S') = I(S) - 62 \cdot 2^{\,m-1}$
+\item $paqd \rightarrow daqdbapbap$ \\\\
+    $I(S') = I(S) + 2^{\,m-1}$
+\item $ccpp \rightarrow adaqdqa$ \\\\
+    $I(S') = I(S) - 12 \cdot 2^{\,m-1}$
+\item $dpd \rightarrow pdp$ \\
+    $I(S') = I(S) - 3 \cdot 2^{\,m-1}$ \\
+\end{enumerate}
+
+Получаем убывающий инвариант для правил I, III и IV.
+
+
+
+% ==============================
+%     КЛАССЫ ЭКВИВАЛЕНТНОСТИ
+% ==============================
+\subsection{Классы эквивалентности}
+
+Исходная SRS $\mathcal{T}$ имеет бесконечное количество классов эквивалентности. Например, строка вида $a^n$ образует отдельный класс эквивалентности для каждого $n \in \mathbb{N}$.
+
+
+
+% ==============================
+%    ЛОКАЛЬНАЯ КОНФЛЮЭНТНОСТЬ
+% ==============================
+\subsection{Локальная конфлюэнтность}
+
+SRS $\T$ не является локально конфлюэнтной, так как слово $apbccpp$ за один шаг
+может быть преобразовано в слова $caqdbapbapcpp$ (по правилу $apbc \rightarrow caqdbapbap$) 
+и $apbadaqdqa$ (по правилу $ccpp \rightarrow adaqdqa$), но эти слова являются различными НФ.
+
+
+
+% ==============================
+%           ПОПОЛНЕНИЕ
+% ==============================
+\subsection{Пополняемость по Кнуту–Бендиксу}
+
+Для применения алгоритма Кнута–Бендикса введём \emph{фундированный порядок} --- 
+length-lexicographic order $\prec$ --- и, в соответствии с ним, переориентируем правила. 
+(Такое преобразование сохраняет классы эквивалентности исходной SRS $\mathcal{T}$.) \\\\
+После переориентации система переписываний примет вид:
+
+\begin{flushleft} 
+$caqdbapbap \rightarrow apbc$\\ 
+$daqdbapbap \rightarrow paqd$\\ 
+$adaqdqa \rightarrow ccpp$\\ 
+$pdp \rightarrow dpd$ \\ 
+\end{flushleft}
+
+\noindent\textbf{Пополнение системы.} \\\\
+\noindent\textbf{1-я итерация.} \\
+
+\begin{tikzpicture}[node distance=2.5cm, auto]
+  \node (A) {$caqdbapbapdp$};
+  \node (B) [below left of=A] {$apbcdp$};
+  \node (C) [below right of=A] {$caqdbapbadpd$};
+  \node (R) [right of=C, xshift=4cm, align=center] {
+    Добавляем правило: \\
+    $caqdbapbadpd \rightarrow apbcdp$
+  };
+  \draw[->] (A) -- (B);
+  \draw[->] (A) -- (C);
+\end{tikzpicture} \\\\
+
+\begin{tikzpicture}[node distance=2.5cm, auto]
+  \node (A) {$daqdbapbapdp$};
+  \node (B) [below left of=A] {$paqddp$};
+  \node (C) [below right of=A] {$daqdbapbadpd$};
+  \node (R) [right of=C, xshift=4cm, align=center] {
+    Добавляем правило: \\
+    $daqdbapbadpd \rightarrow paqddp$
+  };
+  \draw[->] (A) -- (B);
+  \draw[->] (A) -- (C);
+\end{tikzpicture}  \\\\
+
+\begin{tikzpicture}[node distance=2.5cm, auto]
+  \node (A) {$pdpdp$};
+  \node (B) [below left of=A] {$dpddp$};
+  \node (C) [below right of=A] {$pddpd$};
+  \node (R) [right of=C, xshift=4cm, align=center] {
+    Добавляем правило: \\
+    $pddpd \rightarrow dpddp$
+  };
+  \draw[->] (A) -- (B);
+  \draw[->] (A) -- (C);
+\end{tikzpicture}  \\\\
+
+Заметим, что на данном этапе ни одно правило нельзя редуцировать. \\\\
+
+\textbf{2-я итерация.} \\\\
+
+\begin{tikzpicture}[node distance=3cm, auto]
+  \node (A) {$caqdbapbadpdaqdbapbadpd$};
+  \node (B) [below left of=A] {$apbcdpaqdbapbadpd$};
+  \node (C) [below right of=A] {$caqdbapbadppaqddp$};
+  \node (R) [right of=C, xshift=1.5cm, align=center] {
+    Добавляем правило: \\
+    $caqdbapbadppaqddp \rightarrow$ \\
+    $apbcdpaqdbapbadpd$
+  };
+  \draw[->] (A) -- (B);
+  \draw[->] (A) -- (C);
+\end{tikzpicture}  \\\\
+
+Для практических целей остановимся на разумной длине правил.  
+Добавим в систему правила из первой итерации, поскольку дальнейшее пополнение приводит к росту длины слов, а наша цель --- построить эквивалентную SRS, удобную для применения. Кроме того, можно доказать, что система бесконечно пополняется. \\\\
+
+\noindent\textbf{Доказательство:} \\
+
+Пусть в системе существует правило, левая часть которого $\sigma$ оканчивается на букву $p$, но не на $pp$, а правая часть $\sigma'$ не оканчивается на $p$. Обозначим через $\lambda$ префикс слова $\sigma$, исключая последнюю букву $p$. Тогда такое слово образует критическую пару с правилом $pdp$. \hfill(*) \\
+
+\noindent\textbf{1-я итерация.}  \\
+
+\begin{tikzpicture}[node distance=2.5cm, auto]
+  \node (A) {$\sigma dp$};
+  \node (B) [below left of=A] {$\sigma' dp$};
+  \node (C) [below right of=A] {$\lambda dpd$};
+  \draw[->] (A) -- (B);
+  \draw[->] (A) -- (C);
+\end{tikzpicture}  \\\\
+
+Tак как правила системы либо уменьшают длину слова, либо сохраняют её, но уменьшают лексикографический порядок $\lambda \succ \sigma'$ и $\lambda dpd \succ \sigma' dp$, поэтому в систему добавляется правило $\lambda dpd \rightarrow \sigma' dp$. \\
+
+Новое правило снова образует критическую пару с $pdp$. \hfill(*) \\
+
+\noindent\textbf{2-я итерация.}  \\
+
+\begin{tikzpicture}[node distance=2.5cm, auto]
+  \node (A) {$\lambda dpdp$};
+  \node (B) [below left of=A] {$\sigma' dpp$};
+  \node (C) [below right of=A] {$\lambda ddpd$};
+  \draw[->] (A) -- (B);
+  \draw[->] (A) -- (C);
+\end{tikzpicture}  \\\\
+
+Аналогично, в систему добавляется правило $\lambda ddpd \rightarrow \sigma' dpp$ и оно снова образует критическую пару с $pdp$. \hfill(*) \\
+
+Повторяя этот процесс, получаем бесконечную цепочку новых правил. 
+
+(*) Образование новых критических пар и правил объясняется тем, что правила системы не могут редуцировать $dp^{+}$ на конце слова, а также последовательность букв $d$, если перед ней не стоит буква $p$, поэтому результат применения правил на схемах - различные нормальные формы.  
+
+В исходной системе присутствует правило $caqdbapbap \rightarrow apbc$, левая часть которого оканчивается на $p$, но не на $pp$, а правая часть не оканчивается на $p$. Следовательно, система SRS $\tilde{\T}$ бесконечно пополняется.
+
+
+% ==============================
+%       ЭКВИВАЛЕНТНАЯ SRS
+% ==============================
+\subsection{Построение SRS $\tilde{\T}'$}
+
+На основе исследования SRS $\tilde{\T}$ была построена эквивалентная ей SRS $\tilde{\T}'$:
+
+\begin{flushleft} 
+$caqdbapbap \rightarrow apbc$\\ 
+$daqdbapbap \rightarrow paqd$\\ 
+$adaqdqa \rightarrow ccpp$\\ 
+$pdp \rightarrow dpd$ \\ 
+$caqdbapbadpd \rightarrow apbcdp$ \\
+$daqdbapbadpd \rightarrow paqddp$ \\
+$pddpd \rightarrow dpddp$ \\
+\end{flushleft}
+
+% -------------------------------------------------------------------------------------
+\newpage
+\section{Тестирование}
+
+% ==============================
+%       ФАЗЗ-ТЕСТИРОВАНИЕ
+% ==============================
+\subsection{Фазз-тестирование эквивалентности}
+
+Исходный код программы представлен в файле <<fuzzTest.erl>>. \\ 
+
+В программе реализованы следующие основные функции:
+
+\begin{itemize}[parsep=-1pt]
+    \item \verb|originalSRS()| – возвращает список исходных правил;
+    \item \verb|equalSRS()| – возвращает список правил, эквивалентных исходным;
+    \item \verb|generateRandomWord()| – генерирует случайное слово длиной от 10 до 30 символов из алфавита \verb|"abcdpq"|;
+    \item \verb|findOccurrences(Sub, Word)| – находит все позиции вхождений подстроки \verb|Sub| в строке \verb|Word|;
+    \item \verb|randomlyTransform(Word, Rules)| – случайным образом применяет правила к слову;
+    \item \verb|getNext(Word, Rules)| – возвращает все возможные варианты слов, которые могут быть получены из \verb|Word| применением одного правила;
+    \item \verb|findTransformOptions(StartWord, Rules)| – находит все слова, достижимые из \verb|StartWord| при последовательном применении правил;
+    \item \verb|areEqual(Small, Big)| – проверяет эквивалентность двух слов;
+    \item \verb|test(TestsNumber)| – выполняет указанное количество фазз-тестов и выводит их результаты.
+\end{itemize}
+
+Программа последовательно генерирует случайные слова, применяет к ним исходные правила, и проверяет эквивалентность слов, через нахождение совпадений между результатами применения эквивалентной системы правил к этим словам, и выводит отчет о каждом тесте.
+
+% ==============================
+%    МЕТАМОРФНОЕ ТЕСТИРОВАНИЕ
+% ==============================
+\subsection{Метаморфное тестирование}
+
+В качестве инвариантов для метаморфного тестирования были выбраны:
+
+\begin{enumerate}[parsep=-1pt]
+    \item сохранение чётности количества букв $c$
+    \item сохранение чётности суммы количеств букв $b$ и $q$
+\end{enumerate}
+
+Исходный код программы представлен в файле <<metaTest.erl>>.\\  
+В программе реализованы следующие основные функции:
+
+\begin{itemize}[parsep=-1pt]
+    \item \verb|originalSRS()| – возвращает список исходных правил;
+    \item \verb|equalSRS()| – возвращает список правил, эквивалентных исходным;
+    \item \verb|generateRandomWord()| – генерирует случайное слово длиной от 10 до 30 символов из алфавита \verb|"abcdpq"|;
+    \item \verb|findOccurrences(Sub, Word)| – находит все позиции вхождений подстроки \verb|Sub| в строке \verb|Word|;
+    \item \verb|randomlyTransform(Word, Rules)| – случайным образом применяет правила к слову;
+    \item \verb|isValidInvarian1(Word, WordAfterOriginal, WordAfterEqual)| – проверяет сохранение первого инварианта (чётность количества букв $c$);
+    \item \verb|isValidInvarian2(Word, WordAfterOriginal, WordAfterEqual)| – проверяет сохранение второго инварианта (чётность суммы количеств букв $b$ и $q$);
+    \item \verb|test(TestsNumber)| – выполняет указанное количество метаморфных тестов и выводит результаты.
+\end{itemize}
+
+Программа генерирует случайные слова, применяет к ним исходную и эквивалентную системы правил, а затем проверяет, сохраняются ли заданные инварианты после преобразований и выводит отчет о каждом тесте.
+
+\end{document}
+
