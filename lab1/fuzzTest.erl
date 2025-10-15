@@ -91,8 +91,8 @@ findTransformOptions(StartWord, Rules) ->
 
 
 bfs([], Visited, _Rules) -> sets:to_list(Visited);
-bfs([Cur | Queue], Visited, Rules) ->
-    NextWords = getNext(Cur, Rules),
+bfs([CurWord | Queue], Visited, Rules) ->
+    NextWords = getNext(CurWord, Rules),
     NewWords = [W || W <- NextWords, not sets:is_element(W, Visited)],
     NewVisited = lists:foldl(fun(W, Acc) -> sets:add_element(W, Acc) end, Visited, NewWords),
     bfs(Queue ++ NewWords, NewVisited, Rules).
@@ -105,11 +105,11 @@ isSameExist(StartWord, Rules, Targets) ->
 
 
 bfsExist([], _Visited, _Rules, _Targets) -> false;
-bfsExist([Cur | Queue], Visited, Rules, Targets) ->
-   case sets:is_element(Cur, Targets) of
+bfsExist([CurWord | Queue], Visited, Rules, Targets) ->
+   case sets:is_element(CurWord, Targets) of
     true -> true;
     false ->
-        NextWords = getNext(Cur, Rules),
+        NextWords = getNext(CurWord, Rules),
         NewWords = [W || W <- NextWords, not sets:is_element(W, Visited)],
         NewVisited = lists:foldl(fun(W, Acc) -> sets:add_element(W, Acc) end, Visited, NewWords),
         bfsExist(Queue ++ NewWords, NewVisited, Rules, Targets)
