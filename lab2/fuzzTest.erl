@@ -14,13 +14,13 @@ dka() ->
         [6, 6]   % 6
     ].
 
-dkaAccepting() -> [true, false, true, false, false, true, false].
+dkaFinals() -> [true, false, true, false, false, true, false].
 
 useDka(Word) ->
     useDkaLoop(Word, 0).
 
 useDkaLoop([], State) ->
-    {State, lists:nth(State + 1, dkaAccepting())};
+    {State, lists:nth(State + 1, dkaFinals())};
 useDkaLoop([H|T], State) ->
     NextState = case H of
         $a -> lists:nth(1, lists:nth(State + 1, dka()));
@@ -38,7 +38,7 @@ useDkaLoop([H|T], State) ->
 nkaTransA() -> [[1],[2],[3],[],[],[]].
 nkaTransB() -> [[1],[],[],[2],[5],[4]].
 nkaTransEps() -> [[],[],[0,4],[],[0],[]].
-nkaAccepting() -> [0].
+nkaFinals() -> [0].
 nkaStart() -> 0.
 
 epsClosure(States) ->
@@ -55,7 +55,7 @@ useNka(Word) ->
     useNkaLoop(Word, Cur).
 
 useNkaLoop([], Cur) ->
-    anyAccepting(Cur, nkaAccepting());
+    anyFinals(Cur, nkaFinals());
 useNkaLoop([H|T], Cur) ->
     NextSet = lists:flatten([case H of
                                 $a -> lists:nth(S + 1, nkaTransA());
@@ -66,8 +66,8 @@ useNkaLoop([H|T], Cur) ->
         _  -> useNkaLoop(T, epsClosure(NextSet))
     end.
 
-anyAccepting(Cur, Accepting) ->
-    lists:any(fun(S) -> lists:member(S, Accepting) end, Cur).
+anyFinals(Cur, Finals) ->
+    lists:any(fun(S) -> lists:member(S, Finals) end, Cur).
 
 
 %% ===================== PKA =====================
@@ -82,22 +82,21 @@ pkaTrans() ->
         #{$a => [4], $b => [6]},   % 5
         #{$a => [5], $b => [9]},   % 6
         #{$a => [4], $b => [8]},   % 7
-        #{$a => [11], $b => [9]},  % 8
+        #{$a => [10], $b => [9]},  % 8
         #{$a => [4], $b => [8]},   % 9
-        #{$a => [5], $b => [12]},  % 10
-        #{$a => [4], $b => [12]},  % 11
-        #{$a => [12], $b => [12]}, % 12
-        #{}                        % 13
+        #{$a => [4], $b => [11]},  % 10
+        #{$a => [11], $b => [11]}, % 11
+        #{}                        % 12
     ].
 
-pkaAccepting() -> [0,2,4,6,8,10].
+pkaFinals() -> [0,2,4,6,8,10].
 pkaStartStates() -> [0,4].
 
 useBranch(Start, Word) ->
     useBranchLoop([Start], Word).
 
 useBranchLoop(Cur, []) ->
-    lists:any(fun(S) -> lists:member(S, pkaAccepting()) end, Cur);
+    lists:any(fun(S) -> lists:member(S, pkaFinals()) end, Cur);
 useBranchLoop(Cur, [H|T]) ->
     NextSet = lists:flatten([maps:get(H, lists:nth(S+1, pkaTrans()), []) || S <- Cur]),
     case NextSet of
