@@ -1,3 +1,8 @@
 *.beam
 testVariants/
 .vscode/
+lab4/package-lock.json
+lab4/parsers.js
+lab4/g.py
+*.csv
+lab4/node_modules
